@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Container, Header, Button, Form } from "semantic-ui-react";
+import 'semantic-ui-css/semantic.min.css'
 
 const initialData = {
   title: "",
@@ -11,7 +12,7 @@ const initialData = {
 
 const UpdateMovie = props => {
   const [movie, setMovie] = useState(initialData);
-  const { match } = props;
+  const { match, movies } = props;
 
   useEffect(() => {
     axios
@@ -34,8 +35,8 @@ const UpdateMovie = props => {
       .put(`http://localhost:5008/api/movies/${match.params.id}`, movie)
       .then(res => {
         setMovie(initialData);
-        props.updateMovies(res.data);
-        props.history.push("/");
+        props.setMovies(res.data);
+        props.history.push(`/movies/${movie.id}`);
       })
       .catch(err => console.log(err));
   };

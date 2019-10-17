@@ -5,6 +5,7 @@ import MovieList from "./Movies/MovieList";
 import axios from 'axios';
 import Movie from "./Movies/Movie";
 import UpdateMovie from "./Movies/UpdateMovie";
+import 'semantic-ui-css/semantic.min.css'
 
 const App = () => {
   const [savedList, setSavedList] = useState([]);
@@ -25,17 +26,30 @@ const App = () => {
   return (
     <>
       <SavedList list={savedList} />
-      <Route exact path="/" component={MovieList} />
       <Route
-        path="/movies/:id"
+        exact
+        path='/'
         render={props => {
-          return <Movie {...props} addToSavedList={addToSavedList} />;
+          return <MovieList {...props} movies={movies} />;
+        }}
+      />
+      <Route
+        path='/movies/:id'
+        render={props => {
+          return (
+            <Movie
+              {...props}
+              addToSavedList={addToSavedList}
+              setMovies={setMovies}
+              movies={movies}
+            />
+          );
         }}
       />
       <Route
         path="/update-movies/:id"
         render={props => {
-          return <UpdateMovie {...props} movies={movies} updateMovies={setMovies} />;
+          return <UpdateMovie {...props} movies={movies} setMovies={setMovies} />;
         }}  
       />
     </>
