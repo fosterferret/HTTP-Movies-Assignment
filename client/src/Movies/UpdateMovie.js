@@ -24,7 +24,7 @@ const UpdateMovie = props => {
     event.persist();
     setMovie({
       ...movie,
-      [ev.target.name]: event.target.value
+      [event.target.name]: event.target.value
     });
   };
 
@@ -81,7 +81,7 @@ const UpdateMovie = props => {
             name="stars"
             onChange={onChangeHandler}
             placeholder="stars"
-            value={Array.from(values.stars).join(", ")}
+            value={Array.from(movie.stars).join(", ")}
           />
         </Form.Field>
 
