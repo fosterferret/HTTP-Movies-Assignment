@@ -1,42 +1,51 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Container, Header, Button, Form } from "semantic-ui-react";
-import 'semantic-ui-css/semantic.min.css'
+import "semantic-ui-css/semantic.min.css";
 
 const initialData = {
   title: "",
   director: "",
   metascore: 0,
-  stars: ""
+  stars: []
 };
 
 const UpdateMovie = props => {
-  const [movie, setMovie] = useState(initialData);
+  const [movieToEdit, setMovieToEdit] = useState(initialData);
   const { match, movies } = props;
 
   useEffect(() => {
     axios
       .get(`http://localhost:5008/api/movies/${match.params.id}`)
-      .then(res => setMovie(res.data))
+      .then(res => setMovieToEdit(res.data))
       .catch(err => console.log(err.response));
   }, [match.params.id]);
 
   const onChangeHandler = event => {
     event.persist();
-    setMovie({
-      ...movie,
+    setMovieToEdit({
+      ...movieToEdit,
       [event.target.name]: event.target.value
     });
+  };
+
+  const handleStars = e => {
+    const newStars = [...movieToEdit.stars];
+    const starIndex = e.target.placeholder.slice(
+      e.target.placeholder.length - 1
+    ); 
+    newStars[starIndex] = e.target.value;
+    setMovieToEdit({ ...movieToEdit, stars: newStars });
   };
 
   const handleSubmit = e => {
     e.preventDefault();
     axios
-      .put(`http://localhost:5008/api/movies/${match.params.id}`, movie)
+      .put(`http://localhost:5008/api/movies/${match.params.id}`, movieToEdit)
       .then(res => {
-        setMovie(initialData);
+        // setMovie(initialData);
         props.setMovies(res.data);
-        props.history.push(`/movies/${movie.id}`);
+        props.history.push(`/movies/${movieToEdit.id}`);
       })
       .catch(err => console.log(err));
   };
@@ -52,7 +61,7 @@ const UpdateMovie = props => {
             name="title"
             onChange={onChangeHandler}
             placeholder="title"
-            value={movie.title}
+            value={movieToEdit.title}
           />
         </Form.Field>
         <Form.Field>
@@ -62,7 +71,7 @@ const UpdateMovie = props => {
             name="director"
             onChange={onChangeHandler}
             placeholder="director"
-            value={movie.director}
+            value={movieToEdit.director}
           />
         </Form.Field>
         <Form.Field>
@@ -72,18 +81,23 @@ const UpdateMovie = props => {
             name="metascore"
             onChange={onChangeHandler}
             placeholder="metascore"
-            value={movie.metascore}
+            value={movieToEdit.metascore}
           />
         </Form.Field>
         <Form.Field>
           <label>Actors</label>
-          <input
-            type="text"
-            name="stars"
-            onChange={onChangeHandler}
-            placeholder="stars"
-            value={Array.from(movie.stars).join(", ")}
-          />
+          {movieToEdit.stars.map((star, i) => (
+            <>
+              <input
+                key={i}
+                onChange={handleStars}
+                placeholder={`star-${i}`}
+                name="star"
+                value={star}
+              />
+              <br />
+            </>
+          ))}
         </Form.Field>
 
         <Button type="submit">Update Movie</Button>
